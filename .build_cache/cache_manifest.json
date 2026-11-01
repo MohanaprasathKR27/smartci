@@ -1,0 +1,13 @@
+{
+    "modules": {
+        "pricing.py": {
+            "signature": "e7bcb27c1823c6721563ab9593cd695c39f93a5b91c2e2680807d20f74066724"
+        },
+        "cart.py": {
+            "signature": "6a1012d9a84e9a3ebba189126059565d7345e696635874f1d83f4b8e206dfa0b"
+        },
+        "inventory.py": {
+            "signature": "ef2f6746e318870b5d7d34fc21ec09f091e43a83430aac5a88fbac527de8febb"
+        }
+    }
+}
