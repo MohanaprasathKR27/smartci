@@ -1,26 +1,17 @@
 
 import hashlib
 import json
-from pathlib import Path
+import time
 import shutil
+from pathlib import Path
 
-# Project directory
 ROOT = Path(__file__).resolve().parent.parent
 
-# Source directory
 SRC_DIR = ROOT / "src"
-
-# Cache directory
 CACHE_DIR = ROOT / ".build_cache"
-
-# Build artifacts directory
 ARTIFACT_DIR = CACHE_DIR / "artifacts"
-
-# Cache manifest
 CACHE_FILE = CACHE_DIR / "cache_manifest.json"
 
-
-# Define module dependencies
 DEPENDENCIES = {
     "pricing.py": [],
     "cart.py": ["pricing.py"],
@@ -29,14 +20,11 @@ DEPENDENCIES = {
 
 
 def calculate_hash(file_path):
-    """Generate SHA-256 hash of a file."""
     content = file_path.read_bytes()
     return hashlib.sha256(content).hexdigest()
 
 
 def load_cache():
-    """Load previous cache information."""
-
     if CACHE_FILE.exists():
         data = json.loads(CACHE_FILE.read_text())
 
@@ -47,19 +35,13 @@ def load_cache():
 
     return {"modules": {}}
 
+
 def save_cache(cache):
-    """Save cache information."""
-
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-
-    CACHE_FILE.write_text(
-        json.dumps(cache, indent=4)
-    )
+    CACHE_FILE.write_text(json.dumps(cache, indent=4))
 
 
 def calculate_signature(module, signatures):
-    """Calculate a signature using source and dependency hashes."""
-
     source_hash = calculate_hash(SRC_DIR / module)
 
     dependency_signatures = {
@@ -79,6 +61,8 @@ def calculate_signature(module, signatures):
 
 def main():
 
+    start_time = time.perf_counter()
+
     print("\nSMART BUILD CACHE SYSTEM")
     print("========================")
 
@@ -87,7 +71,6 @@ def main():
 
     signatures = {}
 
-    # Process modules in dependency order
     for module in ["pricing.py", "cart.py", "inventory.py"]:
 
         signature = calculate_signature(module, signatures)
@@ -104,12 +87,12 @@ def main():
 
         if cache_valid:
             print(f"CACHE HIT  : {module}")
+
         else:
             print(f"CACHE MISS : {module}")
 
             ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 
-            # Simulate a build by copying source into an artifact
             shutil.copy2(SRC_DIR / module, artifact)
 
         new_cache["modules"][module] = {
@@ -121,6 +104,13 @@ def main():
     print("\nBuild process completed.")
     print("Cache manifest updated.")
 
+    end_time = time.perf_counter()
+
+    execution_time = end_time - start_time
+
+    print(f"Execution Time: {execution_time:.6f} seconds")
+
 
 if __name__ == "__main__":
     main()
+
